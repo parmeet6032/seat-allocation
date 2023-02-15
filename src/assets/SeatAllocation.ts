@@ -2,10 +2,11 @@ let seats: boolean[], vacantSeats: number;
 
 function Driver() {
 	seats = new Array<boolean>(80);
-	vacantSeats = 70;
+	vacantSeats = 67;
 
 	seats.fill(false);
-	seats.fill(true, 0, 9);
+	seats.fill(true, 0, 10);
+	seats.fill(true, 77, 80);
 
 	display();
 
@@ -13,9 +14,17 @@ function Driver() {
 	console.log(result);
 
 	display();
+
+	let Result = transform(seats, 7);	// 2D matrix
+	for (let i = 0; i < Result.length; i++) {
+		for (let j = 0; j < Result[i].length; j++) {
+			process.stdout.write(Result[i][j] + "\t");
+		}
+		console.log('\n');
+	}
 }
 
-function bookSeats(seatsToBook: number) {
+export function bookSeats(seatsToBook: number) {
 	let seatsBooked: string = "";
 
 	if (seatsToBook > vacantSeats) {
@@ -126,11 +135,29 @@ function getIndexSameRow(seatsToBook: number) {
 	return rowIndex;
 }
 
+export function transform(seats: boolean[], COLS: number) {
+	let n = seats.length;
+	let ROWS = n / COLS;
+
+	if (n % COLS > 0) {
+		ROWS++;
+	}
+
+	let result: boolean[][] = [];
+
+	for (let i = 0; i < n; i += COLS) {
+		let ROW = i / COLS;
+		result[ROW] = seats.slice(i, i + COLS);
+	}
+
+	return result;
+}
+
 function display() {
 	for (let i = 0; i < 80; i += 7) {
-		console.log("Row " + ((i / 7) + 1) + ": ");
+		process.stdout.write("Row " + ((i / 7) + 1) + ": ");
 		for (let j = i; j < i + 7 && j < 80; j++) {
-			console.log(seats[j] + "\t");
+			process.stdout.write(seats[j] + "\t");
 		}
 		console.log('\n');
 	}

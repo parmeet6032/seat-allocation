@@ -1,1 +1,14 @@
-<p>status works!</p>
+<table class="table">
+  <tbody class="text-center"> 
+    <tr *ngFor="let row of seats2D; index as rowIndex">
+      <th scope="row">Row {{ rowIndex + 1 }}</th>
+      <td
+        *ngFor="let col of row; index as colIndex"
+        [ngClass]="{ 'bg-success text-white': col == true }"
+        class="cell"
+      >
+        {{ rowIndex * COLUMNS + colIndex + 1 }}
+      </td>
+    </tr>
+  </tbody>
+</table>

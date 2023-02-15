@@ -7,15 +7,12 @@ import { NgForm } from '@angular/forms';
   styleUrls: ['./book-seat.component.css']
 })
 export class BookSeatComponent {
-  bookingForm :NgForm;
 
-  constructor(){
-    
+  constructor() {
+
   }
-  
+
   onSubmit() {
     console.log("Submitted");
-    console.log(bookingForm.value);
-    
   }
 }

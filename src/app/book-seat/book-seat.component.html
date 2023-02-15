@@ -1,14 +1,15 @@
 <div class="w-50">
-    <form #bookingForm="ngForm">
-        <div class="row g-3 align-items-center">
-            <div class="col-auto">
-                <label for="numberOfSeats" class="form-label">Number of seats:</label>
-            </div>
-            <div class="col-auto">
-                <input type="text" class="form-control" id="numberOfSeats" ngModel/>
-            </div>
-        </div>
-        <button type="button" class="btn btn-primary mt-3" (click)="onSubmit()">Submit</button>
-    </form>
-
+  <form #bookingForm="ngForm">
+    <div class="row g-3 align-items-center">
+      <div class="col-auto">
+        <label for="numberOfSeats" class="form-label">Number of seats:</label>
+      </div>
+      <div class="col-auto">
+        <input type="text" class="form-control" id="numberOfSeats" ngModel />
+      </div>
+    </div>
+    <button type="button" class="btn btn-primary mt-3" (click)="onSubmit()">
+      Submit
+    </button>
+  </form>
 </div>
