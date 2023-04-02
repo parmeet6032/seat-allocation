@@ -2,20 +2,40 @@ let seats: boolean[], vacantSeats: number;
 
 function Driver() {
 	seats = new Array<boolean>(80);
-	vacantSeats = 67;
+	vacantSeats = 57;
 
 	seats.fill(false);
 	seats.fill(true, 0, 10);
 	seats.fill(true, 77, 80);
+	seats[1 * 7 + 5] = true;
+	seats[2 * 7 + 2] = true;
+	seats[3 * 7] = true;
+	seats[4 * 7] = true;
+	seats[5 * 7] = true;
+	seats[6 * 7] = true;
+	seats[7 * 7] = true;
+	seats[8 * 7] = true;
+	seats[9 * 7] = true;
+	seats[10 * 7] = true;
 
 	display();
 
 	let result = bookSeats(8);
-	console.log(result);
+	console.log("For input 8:", result);
+
+	result = bookSeats(3);
+	console.log("For input 3:", result);
+
+	result = bookSeats(5);
+	console.log("For input 5:", result);
+
+	result = bookSeats(7);
+	console.log("For input 7:", result);
 
 	display();
 
-	let Result = transform(seats, 7);	// 2D matrix
+	// 2D matrix
+	let Result = transform(seats, 7);
 	for (let i = 0; i < Result.length; i++) {
 		for (let j = 0; j < Result[i].length; j++) {
 			process.stdout.write(Result[i][j] + "\t");
@@ -25,54 +45,47 @@ function Driver() {
 }
 
 export function bookSeats(seatsToBook: number) {
+	if (seatsToBook > 7 || seatsToBook <= 0) {
+		return "Invalid input. Seats to book can range from 1 to 7.";
+	}
+
 	let seatsBooked: string = "";
 
 	if (seatsToBook > vacantSeats) {
 		return "Seats unavailable";
 	}
 
-	let availableInSameRow: boolean = false;
-
 	// check for same row
-	let rowIndex = getIndexSameRow(seatsToBook);
-	if (rowIndex != -1) {
-		availableInSameRow = true;
-	}
+	let startingIndex = getIndexSameRow(seatsToBook);
 
-	console.log("Available in same row: " + availableInSameRow);
+	console.log("Available in same row:", (startingIndex != -1) ? true : false);
 
-	if (availableInSameRow == true) {
-		// book seats
-		let temp = seatsToBook;
-
-		for (let j = rowIndex; j < rowIndex + 7 && j < 80 && temp > 0; j++) {
-			if (seats[j] == false) {
-				seats[j] = true;
-				temp--; // seat booked
-				seatsBooked += j + " ";
-			}
-		}
-	} else {
+	if (startingIndex == -1) {
 		// check for nearest seats
-		let temp = seatsToBook;
-
-		let startingIndex = getIndexNearestSeats(seatsToBook);
-
-		for (let j = startingIndex; temp > 0 && j < 80; j++) {
-			if (seats[j] == false) {
-				seats[j] = true;
-				temp--; // seat booked
-				seatsBooked += j + " ";
-			}
-		}
+		startingIndex = getIndexNearestSeats(seatsToBook);
 	}
+	// book seats
+	seatsBooked = setVacantToFilled(startingIndex, seatsToBook);
 
 	vacantSeats -= seatsToBook;
 	return seatsBooked;
 }
 
+function setVacantToFilled(startIndex: number, seatsToBook: number) {
+	let seatsBooked = "";
+
+	for (let i = startIndex; seatsToBook > 0 && i < 80; i++) {
+		if (seats[i] == false) {
+			seats[i] = true;
+			seatsToBook--; // seat booked
+			seatsBooked += i + " ";
+		}
+	}
+	return seatsBooked;
+}
+
 function getIndexNearestSeats(seatsToBook: number) {
-	let size = Infinity;
+	let minSize = Infinity;
 	let startIndex = -1;
 
 	let count = 0;
@@ -85,28 +98,26 @@ function getIndexNearestSeats(seatsToBook: number) {
 		if (seats[i] == false) {
 			count++;
 
-			// remove preceding already booked seats from window
-			if (count >= seatsToBook) {
+			if (count == seatsToBook) {
+				// remove preceding already booked seats from window
 				while (seats[start] == true) {
 					start++;
 				}
-			}
 
-			if (count == seatsToBook) {
-				let ans = end - start + 1;
+				let size = end - start + 1;
 
-				if (size > ans) {
+				if (size < minSize) {
+					// got a smaller window size containing seatToBook
 					startIndex = start;
-					size = ans;
+					minSize = size;
 				}
 			} else if (count > seatsToBook) {
+				// lose a vacant seat
 				start++;
-				let ans = end - start + 1;
-
-				if (size > ans) {
-					startIndex = start;
-					size = ans;
-				}
+				count--;
+				// re-check for the current i
+				i--;
+				count--;
 			}
 		}
 	}

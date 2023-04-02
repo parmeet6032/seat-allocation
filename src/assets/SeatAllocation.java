@@ -1,4 +1,3 @@
-package src.assets;
 import java.util.*;
 
 public class SeatAllocation {
@@ -7,14 +6,35 @@ public class SeatAllocation {
 
   public static void main(String[] args) {
     seats = new boolean[80];
-    vacantSeats = 67;
+    vacantSeats = 57;
 
     Arrays.fill(seats, 0, 10, true);
     Arrays.fill(seats, 77, 80, true);
+    seats[1 * 7 + 5] = true;
+    seats[2 * 7 + 2] = true;
+    seats[3 * 7] = true;
+    seats[4 * 7] = true;
+    seats[5 * 7] = true;
+    seats[6 * 7] = true;
+    seats[7 * 7] = true;
+    seats[8 * 7] = true;
+    seats[9 * 7] = true;
+    seats[10 * 7] = true;
+
     display();
 
+    // 2D matrix
     String result = bookSeats(8);
-    System.out.println(result);
+    System.out.println("For input 8: " + result);
+
+    result = bookSeats(3);
+    System.out.println("For input 3: " + result);
+
+    result = bookSeats(5);
+    System.out.println("For input 5: " + result);
+
+    result = bookSeats(7);
+    System.out.println("For input 7: " + result);
 
     display();
 
@@ -28,47 +48,28 @@ public class SeatAllocation {
   }
 
   static String bookSeats(int seatsToBook) {
+    if (seatsToBook > 7 || seatsToBook <= 0) {
+      return "Invalid input. Seats to book can range from 1 to 7.";
+    }
+
     String seatsBooked = "";
 
     if (seatsToBook > vacantSeats) {
       return "Seats unavailable";
     }
 
-    boolean availableInSameRow = false;
-
     // check for same row
-    int rowIndex = getIndexSameRow(seatsToBook);
-    if (rowIndex != -1) {
-      availableInSameRow = true;
-    }
+    int startingIndex = getIndexSameRow(seatsToBook);
 
-    System.out.println("Available in same row: " + availableInSameRow);
+    System.out.print("Available in same row: ");
+    System.out.println(startingIndex != -1 ? true : false);
 
-    if (availableInSameRow == true) {
-      // book seats
-      int temp = seatsToBook;
-
-      for (int j = rowIndex; j < rowIndex + 7 && j < 80 && temp > 0; j++) {
-        if (seats[j] == false) {
-          seats[j] = true;
-          temp--; // seat booked
-          seatsBooked += j + " ";
-        }
-      }
-    } else {
+    if (startingIndex == -1) {
       // check for nearest seats
-      int temp = seatsToBook;
-
-      int startingIndex = getIndexNearestSeats(seatsToBook);
-
-      for (int j = startingIndex; temp > 0 && j < 80; j++) {
-        if (seats[j] == false) {
-          seats[j] = true;
-          temp--; // seat booked
-          seatsBooked += j + " ";
-        }
-      }
+      startingIndex = getIndexNearestSeats(seatsToBook);
     }
+    // book seats
+    seatsBooked = setVacantToFilled(startingIndex, seatsToBook);
 
     vacantSeats -= seatsToBook;
     printVacantSeats();
@@ -76,8 +77,21 @@ public class SeatAllocation {
     return seatsBooked;
   }
 
+  private static String setVacantToFilled(int startingIndex, int seatsToBook) {
+    String seatsBooked = "";
+
+    for (int i = startingIndex; seatsToBook > 0 && i < 80; i++) {
+      if (seats[i] == false) {
+        seats[i] = true;
+        seatsToBook--; // seat booked
+        seatsBooked += i + " ";
+      }
+    }
+    return seatsBooked;
+  }
+
   private static int getIndexNearestSeats(int seatsToBook) {
-    int size = Integer.MAX_VALUE;
+    int minSize = Integer.MAX_VALUE;
     int startIndex = -1;
 
     int count = 0;
@@ -87,33 +101,30 @@ public class SeatAllocation {
     for (int i = 0; i < 80; i++) {
       end = i;
 
-      if (seats[i] == false) {
+      if (seats[end] == false) {
         count++;
 
-        // remove preceding already booked seats from window
-        if (count >= seatsToBook) {
+        if (count == seatsToBook) {
+          // remove preceding already booked seats from window
           while (seats[start] == true) {
             start++;
           }
-        }
 
-        if (count == seatsToBook) {
-          int ans = end - start + 1;
+          int size = end - start + 1;
 
-          if (size > ans) {
+          if (size < minSize) {
+            // got a smaller window size containing seatToBook
             startIndex = start;
-            size = ans;
+            minSize = size;
           }
         } else if (count > seatsToBook) {
+          // lose a vacant seat
           start++;
-          int ans = end - start + 1;
-
-          if (size > ans) {
-            startIndex = start;
-            size = ans;
-          }
+          count--;
+          // re-check for the current i
+          i--;
+          count--;
         }
-
       }
     }
     return startIndex;
@@ -130,7 +141,7 @@ public class SeatAllocation {
     for (int i = 0; i < 80; i += 7) {
       int vacant = 0; // in same row
 
-      for (int j = i; j < i + 7 && j < 80; j++) {
+      for (int j = i; j < 80 && j < i + 7; j++) {
         if (seats[j] == false) {
           vacant++;
         }

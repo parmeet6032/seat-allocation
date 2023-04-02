@@ -5,11 +5,27 @@
         <label for="numberOfSeats" class="form-label">Number of seats:</label>
       </div>
       <div class="col-auto">
-        <input type="text" class="form-control" id="numberOfSeats" ngModel />
+        <input
+          type="number"
+          class="form-control"
+          placeholder="0"
+          name="seatsToBook"
+          [(ngModel)]="seatsToBook"
+        />
       </div>
     </div>
-    <button type="button" class="btn btn-primary mt-3" (click)="onSubmit()">
+    <button
+      type="submit"
+      class="btn btn-primary mt-3"
+      (click)="onSubmit(bookingForm)"
+    >
       Submit
     </button>
   </form>
+  <div class="mt-3 text-danger text-center" *ngIf="error">
+    {{ errorMessage }}
+  </div>
+  <div class="mt-3 text-success text-center" *ngIf="!pristine && !error">
+    {{ successMessage }}
+  </div>
 </div>
