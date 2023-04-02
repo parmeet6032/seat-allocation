@@ -40,3 +40,7 @@ testem.log
 # System files
 .DS_Store
 Thumbs.db
+
+# User files
+./Unstop_Full_Stack_Developer_Test_2.pdf
+./Unstop_Full_Stack_Developer_Test.pdf
