@@ -12,7 +12,6 @@ export class SeatService {
   constructor() {
     this.seats = new Array<boolean>(80).fill(false);
     this.seats.fill(true, 0, 10);
-    this.seats.fill(true, 77, 80);
     this.seats[1 * 7 + 5] = true;
     this.seats[2 * 7 + 2] = true;
     this.seats[3 * 7] = true;
@@ -24,7 +23,7 @@ export class SeatService {
     this.seats[9 * 7] = true;
     this.seats[10 * 7] = true;
 
-    this.vacantSeats = 57;
+    this.vacantSeats = 60;
 
     this.seats2D = this.transform(this.seats, this.COLUMNS);
   }
